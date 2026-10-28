@@ -10,19 +10,22 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_PYTHON=${PYTHON_VERSION} \
     UV_PROJECT_ENVIRONMENT=/app/.venv
 
-# Git fetches the pinned elephant-driver during uv sync.
-RUN apt -y update && apt -y install git libgl1 libglib2.0-0 libgomp1
+# OpenCV needs these shared libraries at install and runtime.
+RUN apt -y update && apt -y install libgl1 libglib2.0-0 libgomp1
 
-# Install the project's dependencies using the lockfile and settings
+# Install the project's dependencies using the lockfile and settings.
+# elephant-driver is the driver/ directory, so that path has to be present here.
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=driver,target=driver \
     uv sync --frozen --no-install-project --no-dev
 
 # Then, add the rest of the project source code and install it
 # Installing separately from its dependencies allows optimal layer caching
 ADD pyproject.toml uv.lock README.md /app/
 ADD src /app/src
+ADD driver /app/driver
 WORKDIR /app
 
 RUN --mount=type=cache,target=/root/.cache/uv \

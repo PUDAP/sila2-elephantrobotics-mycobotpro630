@@ -1,0 +1,25 @@
+[project]
+name = "elephant-driver"
+version = "0.1.0"
+description = "Drivers for the 'elephant' machine"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "pymycobot==4.0.4",
+    # "ros-rclpy==9.1.2",  # Linux-only; disabled for now
+    "numpy==2.2.6",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "python-dotenv>=1.2.1",
+    "paramiko>=3.5.0",
+    "Pillow>=11.0.0",
+    "opencv-python>=4.13.0.92",
+    "flask>=3.0.0",
+]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/elephant_driver"]

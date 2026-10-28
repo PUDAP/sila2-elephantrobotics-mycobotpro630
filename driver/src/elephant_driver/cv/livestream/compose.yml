@@ -1,0 +1,40 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    ports:
+      - "8554:8554" # RTSP
+      - "1935:1935" # RTMP
+      - "8888:8888" # HLS
+      - "8889:8889" # WebRTC (HTTP/WHIP/WHEP)
+      - "8189:8189/udp" # WebRTC ICE/UDP
+      - "8189:8189/tcp" # WebRTC ICE/TCP
+    environment:
+      # Enable WebRTC
+      - MTX_WEBRTC=yes
+      - MTX_WEBRTCADDRESS=:8889
+      - MTX_WEBRTCLOCALUDPADDRESS=:8189
+      - MTX_WEBRTCADDITIONALHOSTS=${TAILSCALE_IP}
+    restart: unless-stopped
+
+  ffmpeg:
+    image: linuxserver/ffmpeg:latest
+    container_name: ffmpeg
+    depends_on:
+      - mediamtx
+    devices:
+      - ${VIDEO_DEVICE}:${VIDEO_DEVICE}
+    group_add:
+      - video
+    command: >
+      -loglevel error
+      -f v4l2 -i ${VIDEO_DEVICE}
+      -c:v libx264 -preset ultrafast -tune zerolatency
+      -c:a aac -f flv rtmp://mediamtx:1935/livestream
+    # 2. Added Docker-side log rotation
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped

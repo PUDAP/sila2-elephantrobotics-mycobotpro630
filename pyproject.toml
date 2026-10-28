@@ -167,7 +167,7 @@ default-groups = "all"
 prerelease = "if-necessary"
 
 [tool.uv.sources]
-elephant-driver = { git = "https://github.com/PUDAP/elephant.git", subdirectory = "driver", rev = "c6b9de54c15fba6ebe92e5024279b73e39e5974e" }
+elephant-driver = { path = "driver" }
 
 [build-system]
 requires = ["hatchling"]

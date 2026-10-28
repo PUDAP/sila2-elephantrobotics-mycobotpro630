@@ -79,7 +79,7 @@ uv python install 3.10
 uv sync --frozen --no-default-groups
 ```
 
-`uv sync` installs the versions in `uv.lock`. That includes `unitelabs-cdk` from PyPI and `elephant-driver` from `https://github.com/PUDAP/elephant.git`, subdirectory `driver`, at the locked revision. The host needs network access to PyPI and GitHub during this step. On Windows, a checkout of that repository can fail with `Filename too long` until Git is allowed to use long paths. Linux hosts do not need that change.
+`uv sync` installs the versions in `uv.lock`. That includes `unitelabs-cdk` from PyPI and `elephant-driver` from the `driver/` directory in this repository. The host needs network access to PyPI during this step.
 
 `config.json` stays on the host. It is listed in `.gitignore`. Create it in the repository directory. Give this server its own `sila_server.uuid` and keep that same value across restarts. `uv run config create --app unitelabs.mycobotpro630:create_app` writes a new file and a new UUID; set the remaining fields as in the example below. On Linux, `uuidgen` prints a UUID.
 
