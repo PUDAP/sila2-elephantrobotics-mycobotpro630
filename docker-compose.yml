@@ -1,0 +1,9 @@
+services:
+  mycobotpro630:
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - type: bind
+        source: ./config.json
+        target: /app/config.json

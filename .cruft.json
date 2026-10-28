@@ -1,0 +1,31 @@
+{
+  "template": "https://gitlab.com/unitelabs/cdk/connector-factory.git",
+  "commit": "c48304a91fd7bc838d6bd04c725dd5a3a74e8512",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "connector_name": "myCobotPro630",
+      "project_name": "mycobotpro630",
+      "package_name": "mycobotpro630",
+      "__package_import_name": "unitelabs.mycobotpro630",
+      "__protocol_name": "Mycobotpro630",
+      "project_description": "A SiLA 2 connector for the myCobot Pro 630 arm, built with the UniteLabs CDK.",
+      "author_full_name": "PUDA",
+      "author_email": "",
+      "project_repo": "https://github.com/PUDAP/sila2-elephantrobotics-mycobotpro630",
+      "communication_type": "none",
+      "env": "uv",
+      "_render_devdocs": false,
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_extensions": [
+        "internal_ext.IsInternalExtension"
+      ],
+      "_template": "https://gitlab.com/unitelabs/cdk/connector-factory.git",
+      "_commit": "c48304a91fd7bc838d6bd04c725dd5a3a74e8512"
+    }
+  },
+  "directory": null
+}
