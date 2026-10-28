@@ -4,7 +4,7 @@ A SiLA 2 connector for the myCobot Pro 630 arm, built with the UniteLabs CDK.
 
 `io/` calls `elephant-driver` and does not import SiLA. `features/` is the SiLA face. Simulation is an in-memory arm in `io/simulation.py`. The default is simulation, so starting the server leaves TCP port 5001 closed and does not scan. Cameras and vision are not part of this server.
 
-The client is `scripts/mycobotpro630_client.py`. Run it with the hackathon client environment, separate from this connector's virtual environment.
+The client is `scripts/mycobotpro630_client.py`. Run it with a SiLA client environment, separate from this connector's virtual environment.
 
 ## Getting Started
 
@@ -18,7 +18,7 @@ Install these before cloning:
 
 `elephant-driver` requires Python 3.10 and does not install on 3.11 or newer. This connector uses that same range.
 
-This server is the process that opens the arm's socket. Stop `elephant-edge` before real mode. Both would connect to the same robot port.
+This server is the process that opens the arm's socket. Stop any other process that already holds that socket before real mode.
 
 Clone, configure, and start the server with [Run the SiLA server](#run-the-sila-server).
 
@@ -70,7 +70,7 @@ uv run connector start --app unitelabs.mycobotpro630:create_app -vvv
 
 The SiLA server runs on the computer that can reach the arm. A client runs on another computer and connects to that server. The arm's own socket stays on port 5001. This server listens on port 50053. Each connector uses port 50053 on its own host. If more than one connector runs on the same host, give each a different `sila_server.port`.
 
-Install Git, [uv][] 0.6.8 or newer, and Python 3.10 (`uv python install 3.10`). Stop `elephant-edge` so only this process opens the arm.
+Install Git, [uv][] 0.6.8 or newer, and Python 3.10 (`uv python install 3.10`). Stop any other process that already holds the arm's socket, so only this process opens it.
 
 ```sh
 git clone https://github.com/PUDAP/sila2-elephantrobotics-mycobotpro630.git
@@ -189,7 +189,7 @@ Start the server from the repository directory so it reads this `config.json`:
 uv run connector start --app unitelabs.mycobotpro630:create_app -vvv
 ```
 
-A client connects to `<sila-host>` at port 50053 with TLS off. `scripts/mycobotpro630_client.py` uses `<sila-host>` and port 50053. Set `hostname` in that script to the computer that runs this server when the client runs on another machine. Run the script with the hackathon SiLA client environment, separate from this server's virtual environment. Do not point that script at the real arm until someone is standing next to it.
+A client connects to `<sila-host>` at port 50053 with TLS off. `scripts/mycobotpro630_client.py` uses `<sila-host>` and port 50053. Set `hostname` in that script to the computer that runs this server when the client runs on another machine. Run the script with a SiLA client environment, separate from this server's virtual environment. Do not point that script at the real arm until someone is standing next to it.
 
 To use a config file outside the repository directory:
 

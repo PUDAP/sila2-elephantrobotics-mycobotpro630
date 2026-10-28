@@ -1,7 +1,6 @@
-"""Call the simulated myCobotPro630 arm with the hackathon SiLA client.
+"""Call the simulated myCobotPro630 arm with a SiLA client.
 
-Run this with the device-integration-hackathon-2026 environment, not the
-connector virtual environment.
+Run this with a SiLA client environment, not the connector virtual environment.
 """
 
 import asyncio

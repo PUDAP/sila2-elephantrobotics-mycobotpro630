@@ -220,6 +220,9 @@ __marimo__/
 cert.pem
 key.pem
 
+# Local tool temp
+.tmp/
+
 # Configuration default paths
 config.json
 config.yaml
