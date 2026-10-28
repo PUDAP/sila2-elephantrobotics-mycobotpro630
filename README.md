@@ -102,7 +102,7 @@ The six `x_min` through `z_max` fields are the workspace this server enforces. T
     "name": "myCobotPro630",
     "type": "Robot",
     "description": "A SiLA 2 connector for the myCobot Pro 630 arm, built with the UniteLabs CDK.",
-    "vendor_url": "https://puda.co/",
+    "vendor_url": "https://www.elephantrobotics.com/en/mycobot-pro-630-en/",
     "default_lifetime": 3600.0
   },
   "cloud_servers": {
@@ -121,10 +121,10 @@ The six `x_min` through `z_max` fields are the workspace this server enforces. T
   "scan_rx": -179.99,
   "scan_ry": 0.0,
   "scan_rz": 111.0,
-  "x_min": -500.0,
-  "x_max": -100.0,
-  "y_min": -250.0,
-  "y_max": 400.0,
+  "x_min": -630.0,
+  "x_max": 630.0,
+  "y_min": -630.0,
+  "y_max": 630.0,
   "z_min": -425.0,
   "z_max": 835.0
 }
@@ -134,11 +134,11 @@ The six `x_min` through `z_max` fields are the workspace this server enforces. T
 
 ## Motion limits
 
-Two ranges apply to every `MoveAbsolute`, `MoveRelative`, and `Scan`. The driver envelope is the outer range. The bench workspace is a smaller XYZ box inside it. A target is checked against the driver envelope first, then against the bench workspace. A miss on either check raises `InvalidCoordinate` and the arm stays where it is.
+Every `MoveAbsolute`, `MoveRelative`, and `Scan` is checked against the workspace in `config.json`. A target outside that workspace raises `InvalidCoordinate` and the arm stays where it is. The default workspace is the driver envelope. A bound outside that envelope is rejected when the server starts.
 
 ### Driver envelope
 
-This range is fixed in `elephant-driver` as `COORD_RANGE`. It is the same range the driver applies before `send_coords`. This connector cannot widen it. A workspace bound outside this table is rejected when the server starts.
+This range is fixed in `elephant-driver` as `COORD_RANGE`. It is the same range the driver applies before `send_coords`. This connector cannot widen it.
 
 | Axis | Minimum | Maximum | Unit |
 | --- | --- | --- | --- |
@@ -153,56 +153,33 @@ Driver speed is an integer from 1 to 3000. The driver default is 800. SiLA move 
 
 Rx, Ry, and Rz have no workspace fields. They stay at this ±180 degree envelope. The driver may rewrite a rotation by ±360 degrees so the wrist takes the short path, and the rewritten value still has to land inside ±180 degrees.
 
-### Bench workspace
-
-Past Elephant use recorded a tighter XY box and used it to clamp vision targets before motion. The same numbers are in `bears-skills/bears-machines/references/elephant.md` (`ROBOT_X_MIN`, `ROBOT_X_MAX`, `ROBOT_Y_MIN`, `ROBOT_Y_MAX`) and in `elephant/vlm_new.py`. This connector ships those numbers as the default workspace and rejects a command that leaves the box.
-
-| Axis | Config fields | Minimum | Maximum | Unit | Where the number came from |
-| --- | --- | --- | --- | --- | --- |
-| X | `x_min`, `x_max` | −500 | −100 | mm | Bench workspace from past use |
-| Y | `y_min`, `y_max` | −250 | 400 | mm | Bench workspace from past use |
-| Z | `z_min`, `z_max` | −425 | 835 | mm | Driver envelope. Past use did not record a separate Z box |
-
-Those workflows also recorded heights. They are poses, and they are already inside the default box:
-
-| Pose | Value |
-| --- | --- |
-| Scan / clearance | X −250 mm, Y 280 mm, Z 330 mm, Rx −179.99°, Ry 0°, Rz 111° |
-| Alignment height | Z 180 mm |
-| Pickup height (`z_touch`) | Z 155 mm |
-| Default place pose in the blue-vial skill | X −264 mm, Y 175 mm, Z 140 mm, Rx 179.99°, Ry 0°, Rz 113° |
-
-The scan pose in `config.json` matches the scan row. `Scan` moves to that pose, so `scan_x`, `scan_y`, and `scan_z` have to sit inside the workspace. The server checks that at startup.
-
 ### What stays configurable
 
-Edit these fields in `config.json`. The server reads them when the process starts.
+Edit these fields in `config.json`. The server reads them when the process starts. The six workspace fields default to the driver envelope.
 
 | Field | Default | Rule |
 | --- | --- | --- |
-| `x_min`, `x_max` | −500, −100 | Millimeters. `x_min` ≤ `x_max`. Both ends inside −630 to 630 |
-| `y_min`, `y_max` | −250, 400 | Millimeters. `y_min` ≤ `y_max`. Both ends inside −630 to 630 |
+| `x_min`, `x_max` | −630, 630 | Millimeters. `x_min` ≤ `x_max`. Both ends inside −630 to 630 |
+| `y_min`, `y_max` | −630, 630 | Millimeters. `y_min` ≤ `y_max`. Both ends inside −630 to 630 |
 | `z_min`, `z_max` | −425, 835 | Millimeters. `z_min` ≤ `z_max`. Both ends inside −425 to 835 |
-| `scan_x`, `scan_y`, `scan_z` | −250, 280, 330 | Millimeters. The scan pose must sit inside the workspace above |
+| `scan_x`, `scan_y`, `scan_z` | −250, 280, 330 | Millimeters. The scan pose must sit inside the workspace |
 | `scan_rx`, `scan_ry`, `scan_rz` | −179.99, 0, 111 | Degrees, each inside −180 to 180 |
 | `default_speed` | 800 | Integer from 1 to 3000 |
 
-The driver envelope itself is not a config field. Setting `x_min` to −700, or `z_max` to 900, makes the server exit at startup with `InvalidCoordinate`. An inverted pair such as `x_min` −100 and `x_max` −500 does the same. The arm socket stays closed.
+The driver envelope itself is not a config field. Setting `x_min` to −700, or `z_max` to 900, makes the server exit at startup with `InvalidCoordinate`. An inverted pair such as `x_min` 100 and `x_max` −100 does the same. The arm socket stays closed.
 
 ### Change the limits
 
-On the computer that runs this server, edit `config.json` in the `mycobotpro630` directory, or the file you pass with `-cfg`. Replace the six workspace lines. This example narrows Z to the place height and the clearance height from past use, and leaves the recorded XY box as it is:
+On the computer that runs this server, edit `config.json` in the repository directory, or the file you pass with `-cfg`. This example narrows the workspace. `Scan` moves to `scan_x`, `scan_y`, and `scan_z`, and the server checks at startup that this pose sits inside the box. The default scan pose is X −250 mm, Y 280 mm, Z 330 mm. If a new edge leaves that pose outside, change the scan fields in the same file.
 
 ```json
-"x_min": -500.0,
-"x_max": -100.0,
-"y_min": -250.0,
+"x_min": -400.0,
+"x_max": 400.0,
+"y_min": -400.0,
 "y_max": 400.0,
-"z_min": 140.0,
-"z_max": 330.0
+"z_min": 0.0,
+"z_max": 500.0
 ```
-
-That box still contains the default scan pose, because scan Z is 330 mm. If you set `z_max` below 330, or move an XY edge past the scan point, change `scan_x`, `scan_y`, and `scan_z` in the same file so the scan pose stays inside the box.
 
 Stop the server and start it again with the command below. A server that is already running keeps the limits it loaded at startup. `config.json` is gitignored, so this change stays on that machine.
 

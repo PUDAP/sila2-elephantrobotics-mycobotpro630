@@ -40,23 +40,23 @@ class Mycobotpro630Config(ConnectorBaseConfig):
     scan_rz: float = 111.0
     """Scan pose Rz in degrees."""
 
-    x_min: float = -500.0
-    """Minimum allowed X in millimeters. The bench workspace used with this arm is -500 to -100."""
+    x_min: float = -630.0
+    """Minimum allowed X in millimeters. Defaults to the driver envelope."""
 
-    x_max: float = -100.0
-    """Maximum allowed X in millimeters. The bench workspace used with this arm is -500 to -100."""
+    x_max: float = 630.0
+    """Maximum allowed X in millimeters. Defaults to the driver envelope."""
 
-    y_min: float = -250.0
-    """Minimum allowed Y in millimeters. The bench workspace used with this arm is -250 to 400."""
+    y_min: float = -630.0
+    """Minimum allowed Y in millimeters. Defaults to the driver envelope."""
 
-    y_max: float = 400.0
-    """Maximum allowed Y in millimeters. The bench workspace used with this arm is -250 to 400."""
+    y_max: float = 630.0
+    """Maximum allowed Y in millimeters. Defaults to the driver envelope."""
 
     z_min: float = -425.0
-    """Minimum allowed Z in millimeters. Past bench use did not tighten Z, so this stays at the driver envelope."""
+    """Minimum allowed Z in millimeters. Defaults to the driver envelope."""
 
     z_max: float = 835.0
-    """Maximum allowed Z in millimeters. Past bench use did not tighten Z, so this stays at the driver envelope."""
+    """Maximum allowed Z in millimeters. Defaults to the driver envelope."""
 
     sila_server: SiLAServerConfig = dataclasses.field(
         default_factory=lambda: SiLAServerConfig(
@@ -68,7 +68,7 @@ class Mycobotpro630Config(ConnectorBaseConfig):
                 """
             ),
             version=str(__version__),
-            vendor_url="https://puda.co/",
+            vendor_url="https://www.elephantrobotics.com/en/mycobot-pro-630-en/",
             port=50053,
         )
     )

@@ -80,7 +80,7 @@ def test_simulated_moves_scan_and_gripper() -> None:
 
 
 def test_workspace_rejects_a_pose_inside_the_driver_range() -> None:
-    protocol = make_protocol()
+    protocol = make_protocol(x_min=-400, x_max=-100)
     protocol.use_simulation()
 
     with pytest.raises(InvalidCoordinate, match="configured workspace"):
